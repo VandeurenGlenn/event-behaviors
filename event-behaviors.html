@@ -1,0 +1,90 @@
+<!--
+@license
+Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+  /*  @behavior EventBehaviors **/
+  EventBehaviors = {
+    properties: {
+      /**
+      * All used events
+      */
+      events: {
+        type: Array,
+        value: []
+      },
+
+      /**
+      * Active events
+      */
+      activeEvents: {
+        type: Array,
+        value: []
+      }
+
+      /**
+      * Target to listen for events
+      * ex: this, document, ...
+      */
+      target: {
+        type: Object,
+        value: function () {
+          return document;
+        }
+      }
+    },
+
+    detached: function () {
+      if (this.activeEvents) {
+        // remove active EventListeners
+        this._removeActiveEventListener();
+      }
+    },
+
+    /**
+    * Add an eventListener for given event, adds the event to 'activeEvents' when 'events' is not defined
+    */
+    _addEventListener: function (eventName, func) {
+      this.target.addEventListener(eventName, func.bind(this));
+      // Add event to activeEvents
+      this.push('activeEvents', {name: eventName});
+      this.push('events', {name: eventName, function: func});
+    },
+
+    /**
+    * Removes given eventListener,
+    * removes event from activeEvents if defined.
+    */
+    _removeEventListener: function (eventName) {
+      this.target.removeEventListener(eventName);
+      // remove event from 'activeEvents'
+      if (this.activeEvents[eventName]) {
+        delete this.activeEvents[eventName];
+      }
+    },
+
+    /**
+    * Removes all active eventListeners
+    */
+    _removeActiveEventListener: function () {
+      for (var i = 0; i < this.activeEvents.length; i++) {
+        this._removeEventListener(this.activeEvents[i].name);
+      }
+    },
+
+    /**
+    * Removes all & add's used events
+    */
+    _resetListeners: function () {
+      this.async(function () {
+        this._removeActiveEventListener();
+        for (var i = 0; i < this.events.length; i++) {
+          this._addEventListener(this.events[i].name, this.events[i].function);
+        }
+      });
+    }
+  };
+
+</script>
