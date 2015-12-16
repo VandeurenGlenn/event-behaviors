@@ -1,12 +1,13 @@
 {
   "name": "event-behaviors",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.1.2",
   "authors": [
     "Glenn Vandeuren <vandeurenglenn@gmail.com>"
   ],
   "description": "An behavior for adding and removing eventListeners.",
   "keywords": [
     "web-component",
+    "web-components",
     "polymer",
     "seed"
   ],

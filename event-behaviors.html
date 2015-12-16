@@ -5,7 +5,7 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
 <link rel="import" href="../polymer/polymer.html">
 
 <script>
-  /*  @behavior EventBehaviors **/
+  /*  @polymerBehavior EventBehaviors **/
   EventBehaviors = {
     properties: {
       /**
@@ -22,7 +22,7 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
       activeEvents: {
         type: Array,
         value: []
-      }
+      },
 
       /**
       * Target to listen for events
@@ -42,41 +42,61 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
         this._removeActiveEventListener();
       }
     },
-
     /**
-    * Add an eventListener for given event, adds the event to 'activeEvents' when 'events' is not defined
-    */
+     * Add an eventListener for given event, adds the event to 'activeEvents' when 'events' is not defined
+     * @param {string} eventName The name of the event to add.
+     * @param {method} func The function of the event to add.
+     */
     _addEventListener: function (eventName, func) {
-      this.target.addEventListener(eventName, func.bind(this));
-      // Add event to activeEvents
-      this.push('activeEvents', {name: eventName});
-      this.push('events', {name: eventName, function: func});
+      this.async(function() {
+        this.target.addEventListener(eventName, func.bind(this));
+        var _event = {name: eventName, function: func};
+        // Add event to activeEvents
+        this.push('activeEvents', _event);
+        this.push('events', _event);
+      });
     },
 
     /**
-    * Removes given eventListener,
-    * removes event from activeEvents if defined.
-    */
-    _removeEventListener: function (eventName) {
-      this.target.removeEventListener(eventName);
-      // remove event from 'activeEvents'
-      if (this.activeEvents[eventName]) {
-        delete this.activeEvents[eventName];
+     * Removes given eventListener from activeEvents.
+     *
+     * @param {string} eventName The name of the event to remove.
+     */
+    _removeFromActiveEvents: function(eventName) {
+      if (this.activeEvents) {
+        this.activeEvents.forEach(function(e) {
+          if (e.name === eventName) {
+            delete this.activeEvents[e];
+          }
+        }.bind(this));
       }
     },
 
     /**
-    * Removes all active eventListeners
-    */
+     * Removes given eventListener,
+     * removes event from activeEvents if defined.
+     *
+     * @param {string} eventName The name of the event to remove.
+     * @param {string} function The function of the event to remove.
+     */
+    _removeEventListener: function (eventName, func) {
+      this.target.removeEventListener(eventName, func);
+      // remove event from 'activeEvents'
+      this._removeFromActiveEvents(eventName);
+    },
+
+    /**
+     * Removes all active eventListeners
+     */
     _removeActiveEventListener: function () {
       for (var i = 0; i < this.activeEvents.length; i++) {
-        this._removeEventListener(this.activeEvents[i].name);
+        this._removeEventListener(this.activeEvents[i].name, this.activeEvents[i].function);
       }
     },
 
     /**
-    * Removes all & add's used events
-    */
+     * Removes all & add's used events
+     */
     _resetListeners: function () {
       this.async(function () {
         this._removeActiveEventListener();
