@@ -49,7 +49,7 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
     _addEventListener: function (eventName, func) {
       this.target.addEventListener(eventName, func.bind(this));
       // Add event to activeEvents
-      this.push('activeEvents', {name: eventName});
+      this.push('activeEvents', {name: eventName, function: func});
       this.push('events', {name: eventName, function: func});
     },
 
@@ -57,10 +57,10 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
     * Removes given eventListener,
     * removes event from activeEvents if defined.
     */
-    _removeEventListener: function (eventName) {
-      this.target.removeEventListener(eventName);
+    _removeEventListener: function (eventName, func) {
+      this.target.removeEventListener(eventName, func);
       // remove event from 'activeEvents'
-      if (this.activeEvents[eventName]) {
+      if (this.activeEvents) {
         delete this.activeEvents[eventName];
       }
     },
@@ -70,7 +70,7 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
     */
     _removeActiveEventListener: function () {
       for (var i = 0; i < this.activeEvents.length; i++) {
-        this._removeEventListener(this.activeEvents[i].name);
+        this._removeEventListener(this.activeEvents[i].name, this.activeEvents[i].function);
       }
     },
 
