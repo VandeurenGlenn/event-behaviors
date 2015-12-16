@@ -7,6 +7,7 @@
   "description": "An behavior for adding and removing eventListeners.",
   "keywords": [
     "web-component",
+    "web-components",
     "polymer",
     "seed"
   ],
