@@ -47,11 +47,13 @@ Copyright (c) 2015 Glenn Vandeuren. All rights reserved.
     * Add an eventListener for given event, adds the event to 'activeEvents' when 'events' is not defined
     */
     _addEventListener: function (eventName, func) {
-      this.target.addEventListener(eventName, func.bind(this));
-      var _event = {name: eventName, function: func};
-      // Add event to activeEvents
-      this.push('activeEvents', _event);
-      this.push('events', _event);
+      this.async(function() {
+        this.target.addEventListener(eventName, func.bind(this));
+        var _event = {name: eventName, function: func};
+        // Add event to activeEvents
+        this.push('activeEvents', _event);
+        this.push('events', _event);
+      });
     },
 
     /**
